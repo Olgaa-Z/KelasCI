@@ -47,7 +47,35 @@ class Berita extends Ci_Controller{
 
 
     function edit($id){
-    	$data['berita'] = $this->Berita_m->select_by_db($id);
+    	$data['berita'] = $this->Berita_m->select_id($id);
     	$this->load->view('edit_berita_v', $data);
+    }
+
+    function editform(){
+        $id_berita = $this->input->post('id_berita');
+        $nm_file = $this->input->post('nm_foto');
+        $config['upload_path'] = './assets/upload_berita/';
+        $config['allowed_types'] = 'jpg|jpeg|png';
+        $config['file_name'] = $nm_file;
+        $config['overwrite'] = TRUE;
+        $this->upload->initialize($config);
+
+        if ($this->upload->do_upload('gambar')) {
+            $gambar = $this->upload->data();
+            $data = array(
+                // 'judul' => $this->input->post('judul'),
+                'isi_berita' => $this->input->post('isi'),
+                'gambar_berita' => $gambar['file_name']
+            );
+        } else {
+            $data = array(
+                'judul_berita' => $this->input->post('judul'),
+                'isi_berita' => $this->input->post('isi')
+               
+            );  
+        }
+        
+        $this->Berita_m->edit_db($id_berita, $data);
+        redirect('Berita');
     }
 }
